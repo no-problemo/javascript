@@ -1,0 +1,71 @@
+<html>
+<head>
+<title></title>
+<style>
+#holder ul{list-style:none}
+#holder .branch{color:blue;cursor:pointer}
+#holder .leaf{cursor:pointer}
+</style>
+</head>
+<body>
+<span id=path ></span><br>
+<button onclick=addItem(this,0) >tambah leaf : 0.1234567890123456789(leaf)</button><br>
+<button onclick=addItem(this,{'(leaf)':0}) >tambah branch : 0.1234567899876543210</button><br>
+<div id=holder ></div>
+<script>
+function jsonList(a,b,cb,c){ 
+  function rekursi(a){
+    s+='<ul>';
+    for(var i in a)
+      if(c===undefined || typeof a[i]==='object'){      
+        s+='<li><span class='+(typeof a[i]==='object'?'branch':'leaf')+' >'+i+'</span>';
+        rekursi(a[i]);
+        s+='</li>';
+      }
+    s+='</ul>'
+  }
+  function rndr(){
+      s='';
+      rekursi(a);
+      if(s!==ss){
+        f.innerHTML=s;
+        ss=s;
+      }
+    setTimeout(rndr,200)
+  }
+  var s='',ss='';
+  var f=document.getElementById(b);
+  rndr();
+  f.onclick=function(e){
+    e=e||event;
+    var f=e.srcElement||e.target;
+    if(f.tagName==='SPAN'){
+      var g=f.nextSibling.style;
+      g.display=g.display==='none'?'block':'none';
+      var s=[];
+      do{
+        s.push(f.innerHTML);
+        f=f.parentNode.parentNode.previousSibling
+      }while(f)
+      cb(s.reverse());
+    }
+  }
+}
+
+var json={'1level1':{'1level2(leaf)':0,'2level2':{'1level3':{'1level4(leaf)':0,'2level4':{'1level5(leaf)':0},'3level4(leaf)':0}},'3level2(leaf)':0},'2level1':{'1level2(leaf)':0,'2level2':{'1level3(leaf)':0},'3level2(leaf)':0},'3level1':{'1level2(leaf)':0,'2level2':{'1level3(leaf)':0},'3level2(leaf)':0}};
+var refer={};
+jsonList(json,'holder',function(a){
+  path.innerHTML=a.join('>')+' :';
+  refer=json;
+  for(var i in a)refer=refer[a[i]]
+},1)
+function addItem(z,b){
+  var a=z.innerHTML.split(': ');
+  if(typeof refer!=='object'){alert('tidak bisa tambah item di leaf');return 0}
+  refer[a[1]]=b;
+  a[1]=Math.random()+(b===0?'(leaf)':'');
+  z.innerHTML=a.join(': ')
+}
+</script>
+</body>
+</html>
